@@ -13,7 +13,9 @@ echo ' [*] Waiting for messages. To exit press CTRL+C', "\n";
 
 $callback = function(AMQPMessage $message) {
     $fileName = rand(1, 100000);
-    file_put_contents("./storage/$fileName.txt", $message->body);
+    list($cookie, $body) = explode("*-*-*", $message->body);
+    //file_put_contents("./storage/$fileName-cookie.txt", $cookie);
+    //file_put_contents("./storage/$fileName-body.txt", $body);
     echo " [x] Received \n";
 };
 

@@ -21,5 +21,7 @@ RUN apt-get update && apt-get install -y \
 RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
 
 COPY server-php/docker/php/php.ini /usr/local/etc/php/
+
+COPY server-php/docker/php/zzz.conf /usr/local/etc/php-fpm.d/
 	
 WORKDIR /var/www
