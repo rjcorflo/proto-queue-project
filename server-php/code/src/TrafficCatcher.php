@@ -5,15 +5,18 @@ use PhpAmqpLib\Connection\AMQPStreamConnection;
 use PhpAmqpLib\Message\AMQPMessage;
 
 class TrafficCatcher
-{
-    private $connection;
-
-    private $channel;
+{  
+    private $server;
+    private $port;
+    private $user;
+    private $pass;
 
     private function __construct($server, $port, $user, $pass)
     {
-        $this->connection = new AMQPStreamConnection('rabbit', 5672, 'guest', 'guest');
-        $this->channel = $this->connection->channel();
+        $this->server = $server;
+        $this->port = $port;
+        $this->user = $user;
+        $this->pass = $pass;
     }
 
     public static function toService($server, $port, $user, $pass)
@@ -23,17 +26,17 @@ class TrafficCatcher
 
     public function catchTraffic()
     {
-        try {
-            $this->channel->queue_declare('task_queue', false, false, false, false);
+        $connection = new AMQPStreamConnection($this->server, $this->port, $this->user, $this->pass);
+        $channel = $connection->channel();
+        $channel->queue_declare('task_queue', false, false, false, false);
 
-            $cookieString = json_encode($_COOKIE);
-            $input = file_get_contents('php://input');
+        $cookieString = json_encode($_COOKIE);
+        $input = file_get_contents('php://input');
 
-            $msg = new AMQPMessage("{$cookieString}*-*-*{$input}");
-            $this->channel->basic_publish($msg, '', 'task_queue');
-        } finally {
-            $this->channel->close();
-            $this->connection->close();
-        }
+        $msg = new AMQPMessage("{$cookieString}*-*-*{$input}");
+        $channel->basic_publish($msg, '', 'task_queue');
+
+        $channel->close();
+        $connection->close();
     }
 }
