@@ -25,7 +25,8 @@ $connection->close();
 
 $afterTime = microtime(true);
 
-echo " Elapsed time catching traffic {$afterTime - $beforetime}";
+$timeElapsed = $afterTime - $beforetime;
+echo " Elapsed time catching traffic {$timeElapsed}";
 
 echo " [x] Sent \n";
 

@@ -30,9 +30,13 @@ class TrafficCatcher
         $channel = $connection->channel();
         $channel->queue_declare('task_queue', false, false, false, false);
 
+        $beforetime = microtime(true);
+
         $cookieString = json_encode($_COOKIE);
         $input = file_get_contents('php://input');
-
+        $afterTime = microtime(true);
+        $timeElapsed = $afterTime - $beforetime;
+        echo " ****** Elapsed time catching traffic {$timeElapsed}";
         $msg = new AMQPMessage("{$cookieString}*-*-*{$input}");
         $channel->basic_publish($msg, '', 'task_queue');
 
